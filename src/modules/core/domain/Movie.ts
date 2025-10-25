@@ -3,9 +3,9 @@ import { InvalidPropsException } from "./exceptions/InvalidPropsException"
 import { stat } from "node:fs"
 
 export enum MovieStatus {
-  RELEASED = 'Lançado',
-  UPCOMING = 'Em breve',
-  CANCELLED = 'Cancelado',
+  RELEASED = 'released',
+  UPCOMING = 'upcoming',
+  CANCELLED = 'cancelled',
 }
 
 export interface MovieProps {
@@ -71,6 +71,10 @@ export class Movie {
     this.setImageUrl(props.imageUrl?.trim())
     this.setVoteCount(props.voteCount)
     this.setCategories(props.categories)
+  }
+
+  public update(props: Omit<MovieProps, 'id'>): void {
+    this.build(props)
   }
   
   private setTitle(title: string): void {

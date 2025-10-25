@@ -1,36 +1,26 @@
-import { randomUUID } from "node:crypto";
 import { InvalidPropsException } from "./exceptions/InvalidPropsException";
 
 interface LanguageProps {
-  code: string;
+  id: string;
   name: string;
 }
 
 export class Language {
   private id: string;
-  private code: string;
   private name: string;
 
-  constructor(id?: string) {
-    this.id = id || randomUUID();
-  }
-
-  public static create(props: Omit<LanguageProps, 'id'>): Language {
+  public static create(props: LanguageProps): Language {
     const instance = new Language();
-    instance.build(props);
+    instance.setId(props.id?.trim());
+    instance.setName(props.name?.trim());
     return instance;
   }
 
-  private build(props: Omit<LanguageProps, 'id'>): void {
-    this.setCode(props.code?.trim());
-    this.setName(props.name?.trim());
-  }
-
-  private setCode(code: string): void {
-    if (!code || code.length === 0) {
+  private setId(id: string): void {
+    if (!id || id.length === 0) {
       throw new InvalidPropsException('Código de idioma inválido.');
     }
-    this.code = code;
+    this.id = id;
   }
 
   private setName(name: string): void {
@@ -42,10 +32,6 @@ export class Language {
 
   public getId(): string {
     return this.id;
-  }
-
-  public getCode(): string {
-    return this.code;
   }
 
   public getName(): string {

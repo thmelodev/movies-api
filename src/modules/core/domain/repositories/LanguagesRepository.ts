@@ -1,5 +1,5 @@
 import { Language } from "../Language";
 
-export interface LanguagesRepository {
+export interface ILanguagesRepository {
   getAll(): Promise<Language[]>
 }

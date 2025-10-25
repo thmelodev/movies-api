@@ -1,9 +1,9 @@
 import { Movie } from "../Movie"
 
-export interface MoviesRepository {
+export interface IMoviesRepository {
   getAll(): Promise<Movie[]>
-  getById(id: string): Promise<Movie | null>
+  getById(id: string): Promise<Movie>
   create(movie: Movie): Promise<Movie>
-  update(movie: Movie): Promise<Movie>
+  save(movie: Movie): Promise<Movie>
   delete(id: string): Promise<boolean>
 }

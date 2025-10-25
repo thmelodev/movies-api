@@ -1,5 +1,5 @@
 import { Category } from "../Category";
 
-export interface CategoriesRepository {
+export interface ICategoriesRepository {
   getAll(): Promise<Category[]>
 }
