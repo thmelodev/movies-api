@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String   @id @db.Uuid
+  name      String   @unique 
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  movies    Movie[]
+
+  @@map("categories")
+}
+
+model Language {
+  id      String   @id
+  name      String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  movies    Movie[]
+
+  @@map("languages")
+}
+
+model Movie {
+  id          String   @id @db.Uuid
+  title       String
+  originalTitle String @map("original_title")
+  synopsis    String
+  ageRating   Int @map("age_rating")
+  releaseDate DateTime     @db.Date @map("release_date")
+  durationMinutes Int @map("duration_minutes") 
+  status   MovieStatus
+  categoryId  String   @db.Uuid @map("category_id")
+  languageId  String   @map("language_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category Category @relation(fields: [categoryId], references: [id])
+  language Language @relation(fields: [languageId], references: [id])
+
+  @@map("movies")
+}
+
+enum MovieStatus {
+  RELEASED  @map("released")
+  UPCOMING  @map("upcoming")
+  CANCELLED @map("cancelled")
+
+  @@map("movie_status")
+}
