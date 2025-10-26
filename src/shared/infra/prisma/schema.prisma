@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,42 +9,46 @@ datasource db {
 
 model Category {
   id        String   @id @db.Uuid
-  name      String   @unique 
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  movies    Movie[]
+  movies Movie[]
 
   @@map("categories")
 }
 
 model Language {
-  id      String   @id
+  id        String   @id
   name      String   @unique
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  movies    Movie[]
+  movies Movie[]
 
   @@map("languages")
 }
 
 model Movie {
-  id          String   @id @db.Uuid
-  title       String
-  originalTitle String @map("original_title")
-  synopsis    String
-  ageRating   Int @map("age_rating")
-  releaseDate DateTime     @db.Date @map("release_date")
-  durationMinutes Int @map("duration_minutes") 
-  status   MovieStatus
-  categoryId  String   @db.Uuid @map("category_id")
-  languageId  String   @map("language_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id              String      @id @db.Uuid
+  title           String
+  originalTitle   String      @unique @map("original_title")
+  synopsis        String
+  ageRating       Int         @map("age_rating")
+  releaseDate     DateTime    @map("release_date") @db.Date
+  durationMinutes Int         @map("duration_minutes")
+  status          MovieStatus
+  budget          Float
+  revenue         Float
+  imageUrl        String      @map("image_url")
+  negativeVotesCount       Int         @map("negative_votes_count")
+  positiveVotesCount   Int         @map("positive_votes_count")
+  languageId      String      @map("language_id")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  category Category @relation(fields: [categoryId], references: [id])
   language Language @relation(fields: [languageId], references: [id])
+  categories Category[] 
 
   @@map("movies")
 }
