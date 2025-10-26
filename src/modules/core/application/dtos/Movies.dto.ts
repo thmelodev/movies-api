@@ -20,6 +20,7 @@ export class MovieDTO {
   revenue: string
   imageUrl: string
   voteCount: number
+  positiveVoteCountPercent: number
   categories: string[]
 
   constructor(props: Movie) {
@@ -36,6 +37,9 @@ export class MovieDTO {
     this.revenue = this.formatMoney(props.getRevenue())
     this.imageUrl = props.getImageUrl()
     this.voteCount = props.getVoteCount()
+    this.positiveVoteCountPercent = props.getVoteCount() > 0
+      ? Math.round((props.getPositiveVotesCount() / props.getVoteCount()) * 100)
+      : 0
     this.categories = props.getCategories()
   }
 

@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto"
 import { InvalidPropsException } from "./exceptions/InvalidPropsException"
-import { stat } from "node:fs"
 
 export enum MovieStatus {
   RELEASED = 'released',
@@ -21,7 +20,8 @@ export interface MovieProps {
   budget: number
   revenue: number
   imageUrl: string
-  voteCount: number
+  negativeVoteCount: number
+  positiveVoteCount: number
   categories: string[]
 }
 
@@ -38,7 +38,8 @@ export class Movie {
   private budget: number
   private revenue: number
   private imageUrl: string
-  private voteCount: number
+  private negativeVoteCount: number
+  private positiveVoteCount: number
   private categories: string[]
 
   constructor(id?: string) {
@@ -69,8 +70,9 @@ export class Movie {
     this.setBudget(props.budget)
     this.setRevenue(props.revenue)
     this.setImageUrl(props.imageUrl?.trim())
-    this.setVoteCount(props.voteCount)
     this.setCategories(props.categories)
+    this.setNegativeVoteCount(props.negativeVoteCount)
+    this.setPositiveVoteCount(props.positiveVoteCount)
   }
 
   public update(props: Omit<MovieProps, 'id'>): void {
@@ -154,8 +156,12 @@ export class Movie {
     this.imageUrl = imageUrl;
   }
 
-  private setVoteCount(voteCount: number): void {
-    this.voteCount = voteCount || 0;
+  private setNegativeVoteCount(negativeVoteCount: number): void {
+    this.negativeVoteCount = negativeVoteCount || 0;
+  }
+
+  private setPositiveVoteCount(positiveVoteCount: number): void {
+    this.positiveVoteCount = positiveVoteCount || 0;
   }
 
   private setCategories(categories: string[]): void {
@@ -214,7 +220,15 @@ export class Movie {
   }
 
   public getVoteCount(): number {
-    return this.voteCount;
+    return this.negativeVoteCount + this.positiveVoteCount;
+  }
+
+  public getNegativeVotesCount(): number {
+    return this.negativeVoteCount;
+  }
+
+  public getPositiveVotesCount(): number {
+    return this.positiveVoteCount;
   }
 
   public getCategories(): string[] {
