@@ -3,7 +3,7 @@ import { ILanguagesRepository } from "../domain/repositories/Languages.repositor
 import { Language } from "../domain/Language";
 import { LanguageMapper } from "./mappers/Language.mapper";
 import { inject, injectable } from "tsyringe";
-import { SharedTokens } from "../../../shared/container";
+import { SharedTokens } from "../../../shared/tokens";
 import { RepositoryException } from "./exceptions/Repository.exception";
 import { CoreTokens } from "../tokens";
 

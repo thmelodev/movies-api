@@ -3,7 +3,7 @@ import { Category } from "../domain/Category";
 import { ICategoriesRepository } from "../domain/repositories/Categories.repository";
 import { CategoryMapper } from "./mappers/Category.mapper";
 import { inject, injectable } from "tsyringe";
-import { SharedTokens } from "../../../shared/container";
+import { SharedTokens } from "../../../shared/tokens";
 import { RepositoryException } from "./exceptions/Repository.exception";
 import { CoreTokens } from "../tokens";
 

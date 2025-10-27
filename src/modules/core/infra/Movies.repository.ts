@@ -3,7 +3,7 @@ import { Movie } from "../domain/Movie";
 import { IMoviesRepository } from "../domain/repositories/Movies.repository";
 import { MovieMapper } from "./mappers/Movie.mapper";
 import { inject, injectable } from "tsyringe";
-import { SharedTokens } from "../../../shared/container";
+import { SharedTokens } from "../../../shared/tokens";
 import { CoreTokens } from "../tokens";
 
 @injectable()

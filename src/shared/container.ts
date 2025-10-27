@@ -1,13 +1,8 @@
 import { container } from 'tsyringe';
 import prisma from './infra/prisma/client';
 import { PrismaClient } from '@prisma/client';
+import { SharedTokens } from './tokens';
 
-const SharedTokens = {
-  PrismaClient: 'PrismaClient'
-}
-
-function registerSharedModule(containerInstance = container) {
+export function registerSharedModule(containerInstance = container) {
   containerInstance.registerInstance<PrismaClient>(SharedTokens.PrismaClient, prisma);
 }
-
-export { SharedTokens, registerSharedModule };
