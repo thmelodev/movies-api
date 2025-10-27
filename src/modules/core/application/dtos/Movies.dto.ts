@@ -2,7 +2,7 @@ import { Movie, MovieStatus } from "../../domain/Movie"
 
 const MovieStatusPT: Record<MovieStatus, string> = {
   [MovieStatus.RELEASED]: 'Lançado',
-  [MovieStatus.UPCOMING]: 'Próximo lançamento',
+  [MovieStatus.UPCOMING]: 'Em breve',
   [MovieStatus.CANCELLED]: 'Cancelado',
 };
 
@@ -12,7 +12,7 @@ export class MovieDTO {
   originalTitle: string
   synopsis: string
   ageRating: number
-  releaseDate: Date
+  releaseDate: string
   duration: string
   status: string
   language: string
@@ -29,7 +29,7 @@ export class MovieDTO {
     this.originalTitle = props.getOriginalTitle()
     this.synopsis = props.getSynopsis()
     this.ageRating = props.getAgeRating()
-    this.releaseDate = props.getReleaseDate()
+    this.releaseDate = this.formatDateBr(props.getReleaseDate())
     this.duration = this.formatDuration(props.getDurationMinutes())
     this.status = this.translateMovieStatus(props.getStatus())
     this.language = props.getLanguage()
@@ -55,5 +55,9 @@ export class MovieDTO {
 
   private translateMovieStatus(status: MovieStatus): string {
     return MovieStatusPT[status] || 'Desconhecido';
+  }
+
+  private formatDateBr(date: Date): string {
+    return new Intl.DateTimeFormat('pt-BR').format(date);
   }
 }
