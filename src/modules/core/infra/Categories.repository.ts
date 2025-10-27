@@ -19,8 +19,8 @@ export class CategoriesRepository implements ICategoriesRepository {
     try {
       const categories = await this.prismaClient.category.findMany();
       return categories.map((category) => this.categoryMapper.toDomain(category));
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
       throw new RepositoryException('Erro ao buscar categorias');
     }
   }
@@ -35,8 +35,8 @@ export class CategoriesRepository implements ICategoriesRepository {
         },
       });
       return this.categoryMapper.listToDomain(categories);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
       throw new RepositoryException('Erro ao buscar categorias por IDs');
     }
   }

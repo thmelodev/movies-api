@@ -19,8 +19,8 @@ export class LanguagesRepository implements ILanguagesRepository {
     try {
       const languages = await this.prismaClient.language.findMany();
       return languages.map((language) => this.languageMapper.toDomain(language));
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
       throw new RepositoryException('Erro ao buscar idiomas');
     }
   }
@@ -36,8 +36,8 @@ export class LanguagesRepository implements ILanguagesRepository {
       }
 
       return this.languageMapper.toDomain(language);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
       throw new RepositoryException('Erro ao buscar idioma por ID');
     }
   }

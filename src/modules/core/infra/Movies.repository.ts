@@ -5,6 +5,7 @@ import { MovieMapper } from "./mappers/Movie.mapper";
 import { inject, injectable } from "tsyringe";
 import { SharedTokens } from "../../../shared/tokens";
 import { CoreTokens } from "../tokens";
+import { RepositoryException } from "./exceptions/Repository.exception";
 
 @injectable()
 export class MoviesRepository implements IMoviesRepository {
@@ -14,67 +15,120 @@ export class MoviesRepository implements IMoviesRepository {
   ) { }
 
   async getAll(): Promise<Movie[]> {
-    const moviesModels = await this.prismaClient.movie.findMany({
-      include: {
-        categories: { select: { categoryId: true } }
-      }
-    });
+    try {
+      const moviesModels = await this.prismaClient.movie.findMany({
+        include: {
+          categories: { select: { categoryId: true } }
+        }
+      });
 
-    const movies = this.movieMapper.listToDomain(moviesModels);
-    return movies;
+      const movies = this.movieMapper.listToDomain(moviesModels);
+      return movies;
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
+      throw new RepositoryException('Erro ao buscar filmes.');
+    }
   }
   async getById(id: string): Promise<Movie | null> {
-    const movieModel = await this.prismaClient.movie.findUnique({
-      where: { id },
-      include: {
-        categories: { select: { categoryId: true } }
+    try {
+      const movieModel = await this.prismaClient.movie.findUnique({
+        where: { id },
+        include: {
+          categories: { select: { categoryId: true } }
+        }
+      });
+      if (!movieModel) {
+        return null;
       }
-    });
-    if (!movieModel) {
-      return null;
-    }
 
-    return this.movieMapper.toDomain(movieModel);
+      return this.movieMapper.toDomain(movieModel);
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
+      throw new RepositoryException('Erro ao buscar filme por ID.');
+    }
   }
 
   async save(movie: Movie): Promise<Movie> {
-    const movieModel = this.movieMapper.toModel(movie);
+    try {
+      const movieModel = this.movieMapper.toModel(movie);
 
-    const createData: Prisma.MovieCreateInput = {
-      ...movieModel,
-      language: {
-        connect: { id: movieModel.languageId }
-      },
-      categories: {
-        connect: movie.getCategories().map(id => ({ movieId_categoryId: { movieId: movieModel.id, categoryId: id } }))
+      const movieData = { ...movieModel, languageId: undefined };
+
+      const createData: Prisma.MovieCreateInput = {
+        ...movieData,
+        language: {
+          connect: { id: movieModel.languageId }
+        },
+        categories: {
+          create: movie.getCategories().map((categoryId) => ({
+            category: { connect: { id: categoryId } }
+          }))
+        }
       }
+
+      const updateData: Prisma.MovieUpdateInput = {
+        ...movieData,
+        language: {
+          connect: { id: movieModel.languageId }
+        },
+        categories: {
+          deleteMany: {},
+          create: movie.getCategories().map((categoryId) => ({
+            category: { connect: { id: categoryId } }
+          }))
+        }
+      }
+
+      const updatedMovie = await this.prismaClient.$transaction(async (tx) => {
+        await tx.movie.upsert({
+          where: { id: movie.getId() },
+          create: createData,
+          update: updateData,
+          include: {
+            categories: { select: { categoryId: true } },
+            language: { select: { id: true } }
+          }
+        });
+
+        await tx.movieCategory.deleteMany({ where: { movieId: movieModel.id } })
+
+        if (movie.getCategories().length > 0) {
+          await tx.movieCategory.createMany({
+            data: movie.getCategories().map((categoryId) => ({
+              movieId: movieModel.id,
+              categoryId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+
+        const reloaded = await tx.movie.findUnique({
+          where: { id: movieModel.id },
+          include: {
+            categories: { select: { categoryId: true } },
+            language: { select: { id: true } },
+          },
+        });
+
+        return reloaded!;
+      })
+
+      return this.movieMapper.toDomain(updatedMovie);
+
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
+      throw new RepositoryException('Erro ao salvar filme.');
     }
-
-    const updateData: Prisma.MovieUpdateInput = {
-      ...movieModel,
-      language: {
-        connect: { id: movieModel.languageId }
-      },
-      categories: {
-        set: movie.getCategories().map(id => ({ movieId_categoryId: { movieId: movieModel.id, categoryId: id } }))
-      }
-    }
-
-    const updatedMovie = await this.prismaClient.movie.upsert({
-      where: { id: movie.getId() },
-      create: createData,
-      update: updateData,
-      include: {
-        categories: { select: { categoryId: true } },
-        language: { select: { id: true } }
-      }
-    });
-    return this.movieMapper.toDomain(updatedMovie);
   }
 
   async delete(id: string): Promise<void> {
-    await this.prismaClient.movie.delete({
-      where: { id }
-    })
+    try {
+      await this.prismaClient.movie.delete({
+        where: { id }
+      })
+    } catch (error) {
+      console.log(`RepositoryException: ${(error as Error).message}`);
+      throw new RepositoryException('Erro ao deletar filme.');
+    }
   }
 }
