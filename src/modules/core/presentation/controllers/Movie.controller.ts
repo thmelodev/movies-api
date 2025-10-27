@@ -1,14 +1,14 @@
+import { FastifyReply, FastifyRequest } from "fastify";
 import { inject } from "tsyringe";
-import { CoreTokens } from "../../tokens";
+import z from "zod";
+import { GetMovieByIdQuery } from "../../application/queries/GetMovieById.query";
 import { ListMoviesQuery } from "../../application/queries/ListMovies.query";
 import { CreateMovieUsecase, CreateMovieUsecaseProps } from "../../application/usecases/CreateMovie.usecase";
 import { DeleteMovieUsecase } from "../../application/usecases/DeleteMovie.usecase";
 import { UpdateMovieUsecase, UpdateMovieUsecaseProps } from "../../application/usecases/UpdateMovie.usecase";
-import { FastifyReply, FastifyRequest } from "fastify";
-import { GetMovieByIdQuery } from "../../application/queries/GetMovieById.query";
-import { MovieDTO } from "../dtos/movie.dto";
 import { InvalidPropsException } from "../../domain/exceptions/InvalidPropsException";
-import z from "zod";
+import { CoreTokens } from "../../tokens";
+import { MovieDTO } from "../dtos/movie.dto";
 
 export class MovieController {
   constructor(
@@ -79,13 +79,11 @@ export class MovieController {
       return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
     }
 
-    const dto = MovieDTO.parse(req.body);
-
     const movie = await this.updateMovieUsecase.execute(
       {
         id: paramsValidation.data.id,
-        ...dto,
-        status: dto.status as UpdateMovieUsecaseProps['status']
+        ...parseResult.data,
+        status: parseResult.data.status as UpdateMovieUsecaseProps['status']
       }
     );
     return reply.status(200).send(movie);
