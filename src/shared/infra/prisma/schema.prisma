@@ -13,7 +13,7 @@ model Category {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  movies Movie[]
+  movies MovieCategory[]
 
   @@map("categories")
 }
@@ -48,9 +48,20 @@ model Movie {
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
   language Language @relation(fields: [languageId], references: [id])
-  categories Category[] 
+  categories MovieCategory[] 
 
   @@map("movies")
+}
+
+model MovieCategory {
+  movieId    String @map("movie_id") @db.Uuid
+  categoryId String @map("category_id") @db.Uuid
+
+  movie    Movie    @relation(fields: [movieId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([movieId, categoryId])
+  @@map("movies_categories")
 }
 
 enum MovieStatus {
