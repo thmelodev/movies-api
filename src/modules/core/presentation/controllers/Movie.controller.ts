@@ -6,6 +6,9 @@ import { DeleteMovieUsecase } from "../../application/usecases/DeleteMovie.useca
 import { UpdateMovieUsecase, UpdateMovieUsecaseProps } from "../../application/usecases/UpdateMovie.usecase";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { GetMovieByIdQuery } from "../../application/queries/GetMovieById.query";
+import { MovieDTO } from "../dtos/movie.dto";
+import { InvalidPropsException } from "../../domain/exceptions/InvalidPropsException";
+import z from "zod";
 
 export class MovieController {
   constructor(
@@ -19,7 +22,7 @@ export class MovieController {
     private readonly updateMovieUsecase: UpdateMovieUsecase,
     @inject(CoreTokens.GetMovieByIdQuery)
     private readonly getMovieByIdQuery: GetMovieByIdQuery
-  ) {}
+  ) { }
 
   public async listMovies(req: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
     const movies = await this.listMoviesQuery.execute();
@@ -27,25 +30,78 @@ export class MovieController {
   }
 
   public async createMovie(req: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-    const movie = await this.createMovieUseCase.execute(req.body as CreateMovieUsecaseProps);
+    const parseResult = MovieDTO.safeParse(req.body);
+
+    if (!parseResult.success) {
+      console.log(`Zod Error: ${JSON.parse(parseResult.error.message)[0]?.message}`);
+      return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
+    }
+
+    const movie = await this.createMovieUseCase.execute(
+      {
+        ...parseResult.data,
+        status: parseResult.data.status as CreateMovieUsecaseProps['status']
+      });
     return reply.status(201).send(movie);
   }
 
   public async deleteMovie(req: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-    const { id } = req.params as { id: string };
-    await this.deleteMovieUsecase.execute(id);
+    const paramsValidation = z.object({
+      id: z.uuid(),
+    }).safeParse(req.params);
+
+    if (!paramsValidation.success) {
+      console.log(`Zod Error: ${JSON.parse(paramsValidation.error.message)[0]?.message}`);
+      return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
+    }
+
+    await this.deleteMovieUsecase.execute(paramsValidation.data.id);
     return reply.status(204).send();
   }
 
   public async updateMovie(req: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-    const { id } = req.params as { id: string };
-    const movie = await this.updateMovieUsecase.execute({id, ...req.body as Omit<UpdateMovieUsecaseProps, 'id'>});
+
+    const paramsValidation = z.object({
+      id: z.uuid(),
+    }).safeParse(req.params);
+
+    if (!paramsValidation.success) {
+      console.log(paramsValidation)
+      console.log(`Zod Error: ${JSON.parse(paramsValidation.error.message)[0]?.message}`);
+      return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
+    }
+
+    const parseResult = MovieDTO.safeParse(req.body);
+
+    if (!parseResult.success) {
+      console.log(parseResult)
+      console.log(`Zod Error: ${JSON.parse(parseResult.error.message)[0]?.message}`);
+      return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
+    }
+
+    const dto = MovieDTO.parse(req.body);
+
+    const movie = await this.updateMovieUsecase.execute(
+      {
+        id: paramsValidation.data.id,
+        ...dto,
+        status: dto.status as UpdateMovieUsecaseProps['status']
+      }
+    );
     return reply.status(200).send(movie);
   }
 
   public async getMovieById(req: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-    const { id } = req.params as { id: string };
-    const movie = await this.getMovieByIdQuery.execute(id);
+    const paramsValidation = z.object({
+      id: z.uuid(),
+    }).safeParse(req.params);
+
+    if (!paramsValidation.success) {
+      console.log(`Zod Error: ${JSON.parse(paramsValidation.error.message)[0]?.message}`);
+      return reply.status(400).send(new InvalidPropsException("Parâmetros inválidos"));
+    }
+
+    const movie = await this.getMovieByIdQuery.execute(paramsValidation.data.id);
     return reply.status(200).send(movie);
   }
 }
