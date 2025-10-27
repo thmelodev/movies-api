@@ -1,8 +1,9 @@
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { IMoviesRepository } from "../../domain/repositories/Movies.repository";
 import { CoreTokens } from "../../tokens";
 import { NotFoundException } from "../exceptions/NotFoundException";
 
+@injectable()
 export class DeleteMovieUsecase {
   constructor(@inject(CoreTokens.MoviesRepository) private readonly moviesRepository: IMoviesRepository) {}
 

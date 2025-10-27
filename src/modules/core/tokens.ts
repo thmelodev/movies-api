@@ -1,3 +1,5 @@
+import { ListMoviesQuery } from "./application/queries/ListMovies.query";
+
 export const CoreTokens = {
   // mappers
   CategoryMapper: 'CategoryMapper',
@@ -12,6 +14,8 @@ export const CoreTokens = {
   // queries
   ListCategoriesQuery: 'ListCategoriesQuery',
   ListLanguagesQuery: 'ListLanguagesQuery',
+  ListMoviesQuery: 'ListMoviesQuery',
+  GetMovieByIdQuery: 'GetMovieByIdQuery',
 
   // usecases
   CreateMovieUseCase: 'CreateMovieUseCase',

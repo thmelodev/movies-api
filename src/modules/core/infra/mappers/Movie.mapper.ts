@@ -22,7 +22,7 @@ export class MovieMapper {
       imageUrl: model.imageUrl,
       negativeVoteCount: model.negativeVotesCount,
       positiveVoteCount: model.positiveVotesCount,
-      categories: model.categories?.map((category) => category.id) || [],
+      categories: model.categories?.map((category) => category.categoryId) || [],
     });
   }
 
@@ -46,7 +46,7 @@ export class MovieMapper {
       imageUrl: domain.getImageUrl(),
       negativeVotesCount: domain.getNegativeVotesCount(),
       positiveVotesCount: domain.getPositiveVotesCount(),
-      categories: domain.getCategories().map((categoryId) => ({ id: categoryId })),
+      categories: domain.getCategories().map((categoryId) => ({ categoryId })),
     }
   }
 

@@ -4,18 +4,19 @@ import { IMoviesRepository } from "../domain/repositories/Movies.repository";
 import { MovieMapper } from "./mappers/Movie.mapper";
 import { inject, injectable } from "tsyringe";
 import { SharedTokens } from "../../../shared/container";
+import { CoreTokens } from "../tokens";
 
 @injectable()
 export class MoviesRepository implements IMoviesRepository {
   constructor(
     @inject(SharedTokens.PrismaClient) private readonly prismaClient: PrismaClient,
-    private readonly movieMapper: MovieMapper
+    @inject(CoreTokens.MovieMapper) private readonly movieMapper: MovieMapper
   ) { }
 
   async getAll(): Promise<Movie[]> {
     const moviesModels = await this.prismaClient.movie.findMany({
       include: {
-        categories: { select: { id: true } }
+        categories: { select: { categoryId: true } }
       }
     });
 
@@ -26,7 +27,7 @@ export class MoviesRepository implements IMoviesRepository {
     const movieModel = await this.prismaClient.movie.findUnique({
       where: { id },
       include: {
-        categories: { select: { id: true } }
+        categories: { select: { categoryId: true } }
       }
     });
     if (!movieModel) {
@@ -45,7 +46,7 @@ export class MoviesRepository implements IMoviesRepository {
         connect: { id: movieModel.languageId }
       },
       categories: {
-        connect: movie.getCategories().map(id => ({ id }))
+        connect: movie.getCategories().map(id => ({ movieId_categoryId: { movieId: movieModel.id, categoryId: id } }))
       }
     }
 
@@ -55,7 +56,7 @@ export class MoviesRepository implements IMoviesRepository {
         connect: { id: movieModel.languageId }
       },
       categories: {
-        set: movie.getCategories().map(id => ({ id }))
+        set: movie.getCategories().map(id => ({ movieId_categoryId: { movieId: movieModel.id, categoryId: id } }))
       }
     }
 
@@ -64,7 +65,7 @@ export class MoviesRepository implements IMoviesRepository {
       create: createData,
       update: updateData,
       include: {
-        categories: { select: { id: true } },
+        categories: { select: { categoryId: true } },
         language: { select: { id: true } }
       }
     });

@@ -1,4 +1,4 @@
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { MovieProps } from "../../domain/Movie";
 import { IMoviesRepository } from "../../domain/repositories/Movies.repository";
 import { NotFoundException } from "../exceptions/NotFoundException";
@@ -6,6 +6,7 @@ import { CoreTokens } from "../../tokens";
 
 export interface UpdateMovieUsecaseProps extends MovieProps {}
 
+@injectable()
 export class UpdateMovieUsecase {
   constructor(@inject(CoreTokens.MoviesRepository) private readonly moviesRepository: IMoviesRepository) {}
 
