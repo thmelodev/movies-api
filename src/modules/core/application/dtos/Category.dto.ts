@@ -1,9 +1,11 @@
+import { Category } from "../../domain/Category";
+
 export class CategoryDTO {
   id: string;
   name: string;
 
-  constructor(props: CategoryDTO) {
-    this.id = props.id;
-    this.name = props.name;
+  constructor(props: Category) {
+    this.id = props.getId();
+    this.name = props.getName();
   }
 }

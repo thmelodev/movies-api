@@ -1,11 +1,13 @@
+import { inject } from "tsyringe";
 import { MovieProps } from "../../domain/Movie";
-import { IMoviesRepository } from "../../domain/repositories/MoviesRepository";
+import { IMoviesRepository } from "../../domain/repositories/Movies.repository";
 import { NotFoundException } from "../exceptions/NotFoundException";
+import { CoreTokens } from "../../tokens";
 
 export interface UpdateMovieUsecaseProps extends MovieProps {}
 
 export class UpdateMovieUsecase {
-  constructor(private readonly moviesRepository: IMoviesRepository) {}
+  constructor(@inject(CoreTokens.MoviesRepository) private readonly moviesRepository: IMoviesRepository) {}
 
   public async execute(props: UpdateMovieUsecaseProps): Promise<void> {
     const movie = await this.moviesRepository.getById(props.id);

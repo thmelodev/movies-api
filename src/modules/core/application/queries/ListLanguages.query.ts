@@ -1,19 +1,14 @@
-import { Language } from "../../domain/Language";
-import { ILanguagesRepository } from "../../domain/repositories/LanguagesRepository";
+import { inject } from "tsyringe";
+import { ILanguagesRepository } from "../../domain/repositories/Languages.repository";
+import { CoreTokens } from "../../tokens";
 import { LanguageDTO } from "../dtos/Language.dto";
 
 export class ListLanguagesQuery {
-  constructor(private readonly languagesRepository: ILanguagesRepository) {}
+  constructor(@inject(CoreTokens.LanguagesRepository) private readonly languagesRepository: ILanguagesRepository) {}
 
   public async execute(): Promise<LanguageDTO[]> {
     const languages = await this.languagesRepository.getAll();
-    return languages.map((language) => this.toDTO(language));
+    return languages.map((language) => new LanguageDTO(language));
   } 
 
-  private toDTO(language: Language): LanguageDTO {
-    return {
-      id: language.getId(),
-      name: language.getName(),
-    };
-  }
 }

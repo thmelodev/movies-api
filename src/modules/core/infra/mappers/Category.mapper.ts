@@ -1,6 +1,8 @@
 import { CategoryModel } from "../models/Category.model";
 import { Category } from "../../domain/Category";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class CategoryMapper {
   toDomain(model: CategoryModel): Category {
     return Category.load({

@@ -2,8 +2,7 @@ import { Movie } from "../Movie"
 
 export interface IMoviesRepository {
   getAll(): Promise<Movie[]>
-  getById(id: string): Promise<Movie>
-  create(movie: Movie): Promise<Movie>
+  getById(id: string): Promise<Movie | null>
   save(movie: Movie): Promise<Movie>
-  delete(id: string): Promise<boolean>
+  delete(id: string): Promise<void>
 }

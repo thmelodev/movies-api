@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "migrate:run": "prisma migrate dev --skip-generate"
+    "dev": "tsx watch ./src/main.ts",
+    "prisma:generate": "prisma generate --schema=./src/shared/infra/prisma/schema.prisma",
+    "migrate:dev": "prisma migrate dev --schema=./src/shared/infra/prisma/schema.prisma",
+    "migrate:create": "prisma migrate dev --create-only --schema=./src/shared/infra/prisma/schema.prisma --name",
+    "migrate:reset": "prisma migrate reset --schema=./src/shared/infra/prisma/schema.prisma --force",
+    "migrate:deploy": "prisma migrate deploy --schema=./src/shared/infra/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +21,8 @@
     "@prisma/client": "^6.18.0",
     "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

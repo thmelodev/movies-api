@@ -2,7 +2,9 @@ import { MovieStatus as MovieStatusPrisma } from "@prisma/client";
 import { Movie, MovieStatus as MovieStatusDomain } from "../../domain/Movie";
 import { MovieModel } from "../models/Movie.model";
 import { TypeErrorException } from "../exceptions/TypeError.exception";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class MovieMapper {
   toDomain(model: MovieModel): Movie {
     return Movie.load({
@@ -24,6 +26,10 @@ export class MovieMapper {
     });
   }
 
+  listToDomain(models: MovieModel[]): Movie[] {
+    return models.map((model) => this.toDomain(model));
+  }
+
   toModel(domain: Movie): MovieModel {
     return {
       id: domain.getId(),
@@ -42,6 +48,10 @@ export class MovieMapper {
       positiveVotesCount: domain.getPositiveVotesCount(),
       categories: domain.getCategories().map((categoryId) => ({ id: categoryId })),
     }
+  }
+
+  listToModel(domains: Movie[]): MovieModel[] {
+    return domains.map((domain) => this.toModel(domain));
   }
 
   private prismaStatusToDomain(s: MovieStatusPrisma): MovieStatusDomain {
