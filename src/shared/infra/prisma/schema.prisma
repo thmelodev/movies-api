@@ -19,7 +19,7 @@ model Category {
 }
 
 model Language {
-  id        String   @id
+  id        String   @id @db.Uuid
   name      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -30,25 +30,25 @@ model Language {
 }
 
 model Movie {
-  id              String      @id @db.Uuid
-  title           String
-  originalTitle   String      @unique @map("original_title")
-  synopsis        String
-  ageRating       Int         @map("age_rating")
-  releaseDate     DateTime    @map("release_date") @db.Date
-  durationMinutes Int         @map("duration_minutes")
-  status          MovieStatus
-  budget          Float
-  revenue         Float
-  imageUrl        String      @map("image_url")
-  negativeVotesCount       Int         @map("negative_votes_count")
-  positiveVotesCount   Int         @map("positive_votes_count")
-  languageId      String      @map("language_id")
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
+  id                 String      @id @db.Uuid
+  title              String
+  originalTitle      String      @unique @map("original_title")
+  synopsis           String
+  ageRating          Int         @map("age_rating")
+  releaseDate        DateTime    @map("release_date") @db.Date
+  durationMinutes    Int         @map("duration_minutes")
+  status             MovieStatus
+  budget             Float
+  revenue            Float
+  imageUrl           String      @map("image_url")
+  negativeVotesCount Int         @map("negative_votes_count")
+  positiveVotesCount Int         @map("positive_votes_count")
+  languageId         String      @map("language_id") @db.Uuid
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
 
-  language Language @relation(fields: [languageId], references: [id])
-  categories MovieCategory[] 
+  language   Language        @relation(fields: [languageId], references: [id])
+  categories MovieCategory[]
 
   @@map("movies")
 }

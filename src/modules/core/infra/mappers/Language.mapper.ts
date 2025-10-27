@@ -5,7 +5,7 @@ import { LanguageModel } from "../models/Language.model";
 @injectable()
 export class LanguageMapper {
   toDomain(model: LanguageModel): Language {
-    return Language.create({
+    return Language.load({
       id: model.id,
       name: model.name,
     })
