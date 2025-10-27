@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto"
 import { InvalidPropsException } from "./exceptions/InvalidPropsException"
 
 export enum MovieStatus {
-  RELEASED = 'released',
-  UPCOMING = 'upcoming',
-  CANCELLED = 'cancelled',
+  RELEASED = 'RELEASED',
+  UPCOMING = 'UPCOMING',
+  CANCELLED = 'CANCELLED',
 }
 
 export interface MovieProps {

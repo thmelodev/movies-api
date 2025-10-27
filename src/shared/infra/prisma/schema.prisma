@@ -65,9 +65,9 @@ model MovieCategory {
 }
 
 enum MovieStatus {
-  RELEASED  @map("released")
-  UPCOMING  @map("upcoming")
-  CANCELLED @map("cancelled")
+  RELEASED  @map("RELEASED")
+  UPCOMING  @map("UPCOMING")
+  CANCELLED @map("CANCELLED")
 
   @@map("movie_status")
 }
