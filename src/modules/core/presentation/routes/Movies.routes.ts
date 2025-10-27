@@ -6,6 +6,7 @@ import { GetMovieByIdQuery } from "../../application/queries/GetMovieById.query"
 import { CreateMovieUsecase, CreateMovieUsecaseProps } from "../../application/usecases/CreateMovie.usecase";
 import { UpdateMovieUsecase, UpdateMovieUsecaseProps } from "../../application/usecases/UpdateMovie.usecase";
 import { DeleteMovieUsecase } from "../../application/usecases/DeleteMovie.usecase";
+import { MovieController } from "../controllers/Movie.controller";
 
 export function registerMoviesRoutes(app: FastifyInstance) {
   const listMoviesQuery = container.resolve<ListMoviesQuery>(CoreTokens.ListMoviesQuery)
@@ -18,34 +19,22 @@ export function registerMoviesRoutes(app: FastifyInstance) {
 
   const deleteMovieQuery = container.resolve<DeleteMovieUsecase>(CoreTokens.DeleteMovieUsecase)
 
+  const controller = new MovieController(
+    listMoviesQuery,
+    createMovieQuery,
+    deleteMovieQuery,
+    updateMovieQuery,
+    getMovieByIdQuery
+  )
 
-  app.get("/movies", async (request, reply) => {
-    const movies = await listMoviesQuery.execute()
-    return reply.send(movies)
-  })
 
-  app.get("/movies/:id", async (request, reply) => {
-    const { id } = request.params as { id: string }
-    const movie = await getMovieByIdQuery.execute(id)
-    return reply.send(movie)
-  })
+  app.get("/movies", controller.listMovies.bind(controller))
 
-  app.post("/movies", async (request, reply) => {
-    const movieData = request.body
-    const movie = await createMovieQuery.execute(movieData as CreateMovieUsecaseProps)
-    return reply.status(201).send(movie)
-  })
+  app.get("/movies/:id", controller.getMovieById.bind(controller))
 
-  app.put("/movies/:id", async (request, reply) => {
-    const { id } = request.params as { id: string }
-    const movieData = request.body
-    const movie = await updateMovieQuery.execute({id, ...movieData as Omit<UpdateMovieUsecaseProps, 'id' >})
-    return reply.send(movie)
-  })
+  app.post("/movies", controller.createMovie.bind(controller))
 
-  app.delete("/movies/:id", async (request, reply) => {
-    const { id } = request.params as { id: string }
-    await deleteMovieQuery.execute(id)
-    return reply.status(204).send()
-  })
+  app.put("/movies/:id", controller.updateMovie.bind(controller))
+
+  app.delete("/movies/:id", controller.deleteMovie.bind(controller))
 }
