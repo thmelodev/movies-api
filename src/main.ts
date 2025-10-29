@@ -12,6 +12,7 @@ registerCoreModule()
 
 const app = fastify({logger: true})
 
+// TODO: Add Error Handler
 app.register(async (instance) => {
   registerCategoriesRoutes(instance)
   registerLanguagesRoutes(instance)

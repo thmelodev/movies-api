@@ -19,6 +19,7 @@ export interface MovieProps {
   language: string
   budget: number
   revenue: number
+  //TODO: add backgroundUrl and trailerUrl
   imageUrl: string
   negativeVoteCount: number
   positiveVoteCount: number
